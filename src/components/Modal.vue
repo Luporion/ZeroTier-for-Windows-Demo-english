@@ -13,8 +13,8 @@
           </div>
           <slot></slot>
           <div class="btns">
-            <div @click="close('cancel')" class="btn">取消</div>
-            <div @click="close('confirm')" class="btn confirm">确认</div>
+            <div @click="close('cancel')" class="btn">Cancel</div>
+            <div @click="close('confirm')" class="btn confirm">Confirm</div>
           </div>
         </div>
       </Transition>

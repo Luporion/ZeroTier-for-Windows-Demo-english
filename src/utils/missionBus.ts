@@ -13,7 +13,7 @@ const timeoutfn = () => {
   });
 };
 // ==============================================================================
-// ==                                   任务调度核心                            ==
+// ==                                   Task Scheduler Core                     ==
 // ==============================================================================
 
 const installZero = () => window.nodeAPI.installZero();
@@ -21,16 +21,16 @@ const getToken = () => window.nodeAPI.readZerotierToken();
 const startService = () => window.nodeAPI.starteZero();
 // sendlog.log()
 
-//预设错误修复
+//Preset error fixes
 let defaultError: Record<string, missionObject> = {
   401: {
     icon: "token",
-    name: "验证",
+    name: "Verify",
     fn: getToken,
   },
   [CodeName.NoInstall]: {
     icon: "install",
-    name: "安装",
+    name: "Install",
     fn: installZero,
     callback(res: any) {
       if (res.status == "success") {
@@ -40,7 +40,7 @@ let defaultError: Record<string, missionObject> = {
   },
   [CodeName.NoService]: {
     icon: "start",
-    name: "启动",
+    name: "Start",
     fn: startService,
     callback(res: any) {
       if (res.status == "success") {
@@ -54,7 +54,7 @@ const missionQuery: Ref<missionObject[]> = ref([]);
 const missionNoEmpty = computed(() => {
   return !!missionQuery.value.length;
 });
-//添加
+//Add
 const addmission = (misObj: missionObject | missionObject[]): void => {
   if (!misObj) {
     // misObj = [...misObjDef]
@@ -73,7 +73,7 @@ const addmission = (misObj: missionObject | missionObject[]): void => {
   }
   missionStart();
 };
-//启动
+//Start
 let misssionLock = false;
 const missionStart = async () => {
   if (misssionLock) return;
@@ -85,19 +85,19 @@ const missionStart = async () => {
     // sendlog.log(res)
     console.log(res);
     if (res.status == "success") {
-      sendlog.log("任务成功", mi.name);
+      sendlog.log("Task succeeded", mi.name);
       mi.finish = true;
       if (typeof mi.callback == "function") {
         mi.callback(res);
       }
       missionQuery.value.shift();
     } else {
-      sendlog.log("任务失败", mi.name);
-      //执行失败,处理预设错误
+      sendlog.log("Task failed", mi.name);
+      //Execution failed, handle preset errors
       faild = true;
       let code = String(res.code);
       if (defaultError[code]) {
-        sendlog.log("错误码", code, "调用自动修复");
+        sendlog.log("Error code", code, "calling auto-fix");
         missionQuery.value.unshift({
           ...defaultError[res.code],
           key: missionCount++,
@@ -106,8 +106,8 @@ const missionStart = async () => {
           missionStart();
         }, 100);
       } else {
-        //无法自动解决的错误,清空任务
-        sendlog.log("错误码", code, "无法自动修复");
+        //Error cannot be automatically resolved, clear tasks
+        sendlog.log("Error code", code, "cannot auto-fix");
         mi.finish = true;
         missionQuery.value.forEach((notRunMi) => {
           notRunMi.callback(res);
@@ -121,16 +121,16 @@ const missionStart = async () => {
 // const creatMission = (fn: () => Promise<T>): () => Promise<T> => {
 //   return addmission(() => fn)
 // }
-//通过网络id获取网络对象
+//Get network object by network ID
 const getNetworkById = (netId: string) => {
   let net = localJsonData.joinedNetworkList?.find((e) => e.id == netId) || {};
   return net;
 };
-//通过成员id获取成员
+//Get member by member ID
 const getMemberById = (net: userNetwork, id: string): netMember | undefined => {
   return net?.memberList?.find((e) => e.id == id);
 };
-//id 名称 键值对
+//ID to name key-value pairs
 const nameMap: Ref<Record<string, string>> = computed(() => {
   let map: Record<any, any> = {};
   localJsonData?.joinedNetworkList?.forEach((net) => {
@@ -144,10 +144,10 @@ const nameMap: Ref<Record<string, string>> = computed(() => {
 });
 
 // ==============================================================================
-// ==                                   本地API请求                                ==
+// ==                                   Local API Requests                      ==
 // ==============================================================================
 
-//获取缓存信息
+//Get cache information
 const localJsonData: localJsonDataType = reactive({});
 const getLocalJsonData = () =>
   window.nodeAPI.readData().then((res: any) => {
@@ -157,13 +157,13 @@ const getLocalJsonData = () =>
     });
     return res;
   });
-//保存到本地json文件
+//Save to local JSON file
 const updateLocalJsonData = () => {
   let json = JSON.parse(JSON.stringify(localJsonData));
-  // sendlog.log('保存json文件', json)
+  // sendlog.log('Save JSON file', json)
   window.nodeAPI.writeData(json);
 };
-//ZeroTiler信息
+//ZeroTier information
 const zerotierStatus: Record<string, any> = reactive({});
 let statusRequestCount = 0;
 const getZeroTierStatus = () => {
@@ -199,15 +199,15 @@ const getZeroTierStatus = () => {
     run();
   });
 };
-//加入网络
+//Join network
 let errmsg: Record<string, string> = {
-  404: "找不到网络",
+  404: "Network not found",
 };
-//加入与更新网络
+//Join and update network
 const joinNetwork = (netId: string | number, data: Object) => {
   return new Promise((resolve, reject) => {
     addmission({
-      name: "加入",
+      name: "Join",
       icon: "list",
       fn: () =>
         window.nodeAPI.requestApi({
@@ -217,18 +217,18 @@ const joinNetwork = (netId: string | number, data: Object) => {
         }),
       callback(res: any) {
         if (res.status == "success") {
-          //跟新本地网络缓存
+          //Update local network cache
           updateLoaclNetwork(res.data);
           resolve(res);
         } else {
-          window.$message(errmsg[String(res.code)] || "添加网络失败");
+          window.$message(errmsg[String(res.code)] || "Failed to add network");
           reject(res);
         }
       },
     });
   });
 };
-//当前已加入的网络列表
+//List of currently joined networks
 const joinedNetworkList = () =>
   window.nodeAPI
     .requestApi({
@@ -236,14 +236,14 @@ const joinedNetworkList = () =>
       method: "get",
     })
     .then((res) => {
-      sendlog.log("获取当前已加入的网络列表");
-      console.log("当前已加入的网络列表", res.data);
+      sendlog.log("Get list of currently joined networks");
+      console.log("List of currently joined networks", res.data);
       if (res.status == "success" && Array.isArray(res.data)) {
-        //更新本地json
+        //Update local JSON
         updateLoaclNetwork(res.data);
       }
     });
-//更新本地网络列表
+//Update local network list
 const updateLoaclNetwork = (nets: userNetwork | userNetwork[]) => {
   // if (Object.prototype.toString.call(localJsonData.joinedNetworkList) !== '[object Object]') {
   if (!Array.isArray(localJsonData.joinedNetworkList)) {
@@ -273,12 +273,12 @@ const updateLoaclNetwork = (nets: userNetwork | userNetwork[]) => {
     }
   }
   updateLocalJsonData();
-  //检查状态是否要轮询
+  //Check if status needs polling
   netStatusPolling();
 };
-//保存轮询的开关
+//Save polling switches
 let netStatusPollingMap: Record<string, any> = {};
-const SUCCESS_STATUS = "OK"; //轮询停止状态
+const SUCCESS_STATUS = "OK"; //Polling stop status
 let createPolling = (netId: string) => {
   const netWorkDetail = () =>
     window.nodeAPI
@@ -287,10 +287,10 @@ let createPolling = (netId: string) => {
         method: "get",
       })
       .then((res) => {
-        sendlog.log("待授权状态轮询", "id:" + netId);
-        // console.log('加入了网络',res.data)
+        sendlog.log("Awaiting authorization status polling", "id:" + netId);
+        // console.log('Joined network',res.data)
         if (res.data.status === SUCCESS_STATUS) {
-          //更新网络
+          //Update network
           updateLoaclNetwork(res.data);
           cancel();
         } else if (res.code == 404) {
@@ -304,7 +304,7 @@ let createPolling = (netId: string) => {
   });
   return { run, cancel };
 };
-//待授权状态进行轮询
+//Poll for authorization status
 const netStatusPolling = () => {
   let netArr = localJsonData.joinedNetworkList || [];
   netArr.forEach((net) => {
@@ -323,11 +323,11 @@ const netStatusPolling = () => {
   });
   return;
 };
-//离开网络
+//Leave network
 const closeNetwork = (netId: string | number) => {
   return new Promise((resolve, reject) => {
     addmission({
-      name: "断开",
+      name: "Disconnect",
       icon: "leave",
       fn: () =>
         window.nodeAPI.requestApi({
@@ -335,21 +335,21 @@ const closeNetwork = (netId: string | number) => {
           method: "delete",
         }),
       callback(res: any) {
-        sendlog.log("离开网络");
-        console.log("离开网络", res.data);
+        sendlog.log("Leave network");
+        console.log("Leave network", res.data);
         if (res.status == "success") {
-          //跟新本地网络缓存
+          //Update local network cache
           // updateLoaclNetwork(res.data)
           resolve(res);
         } else {
-          window.$message(errmsg[String(res.code)] || "离开网络失败");
+          window.$message(errmsg[String(res.code)] || "Failed to leave network");
           reject(res);
         }
       },
     });
   });
 };
-//相邻节点列表
+//Adjacent node list
 const peerList = ref([]);
 const getPeerList = () => {
   return new Promise((resolve, reject) => {
@@ -359,8 +359,8 @@ const getPeerList = () => {
       })
       .then((res: any) => {
         if ((res.status = res)) {
-          sendlog.log("获取相邻节点列表");
-          console.log("获取相邻节点列表", res.data);
+          sendlog.log("Get adjacent node list");
+          console.log("Get adjacent node list", res.data);
           peerList.value = res.data;
           resolve("");
         }
@@ -369,9 +369,9 @@ const getPeerList = () => {
 };
 
 // ==============================================================================
-// ==                                 node服务请求                                ==
+// ==                                 Node Service Requests                     ==
 // ==============================================================================
-//合并adminId
+//Merge adminId
 const assignAdminId = (
   netId: string,
   userId?: string,
@@ -391,7 +391,7 @@ const assignAdminId = (
   }
   return [...adminIds];
 };
-//将管理员id设置到网络tag里
+//Set admin ID to network tag
 const updateNetTag = (netId: string, tag: any[]) => {
   let net = getNetworkById(netId);
   window.nodeAPI
@@ -407,14 +407,14 @@ const updateNetTag = (netId: string, tag: any[]) => {
       },
     })
     .then((res) => {
-      console.log("更新tag", res);
+      console.log("Update tag", res);
     });
 };
-//验证网络管理token
+//Verify network management token
 const authAdminToken = (netId: string, token: string) => {
   return new Promise((resolve, reject) => {
     addmission({
-      name: "验证",
+      name: "Verify",
       icon: "auth",
       fn: () =>
         window.nodeAPI.requestApi({
@@ -435,26 +435,26 @@ const authAdminToken = (netId: string, token: string) => {
                 netId,
                 String(zerotierStatus.address)
               );
-              //更新权限token到本地文件
+              //Update permission token to local file
               updateLoaclNetwork({
                 id: netId,
                 Authorization: "token " + token,
                 adminIds,
               });
-              //更新网络额外参数
+              //Update network extra parameters
               updateNetTag(netId, ["adminIds", adminIds]);
               resolve(res);
               return;
             }
           }
-          window.$message(errmsg[String(res.code)] || "认证失败");
+          window.$message(errmsg[String(res.code)] || "Authentication failed");
           reject({
             status: "error",
             code: 0,
-            data: "认证失败",
+            data: "Authentication failed",
           });
         } else {
-          window.$message(errmsg[String(res.code)] || "认证失败");
+          window.$message(errmsg[String(res.code)] || "Authentication failed");
           reject(res);
         }
       },
@@ -462,9 +462,9 @@ const authAdminToken = (netId: string, token: string) => {
   });
 };
 
-//启动管理员功能的网络
+//Start administrator functionality for network
 const networkAdminServiceSwitch: Record<string, any> = {};
-//重设已启用的功能
+//Reset enabled functionality
 const resetNetworkAdminService = (netId: string, service: string) => {
   if (networkAdminServiceSwitch[netId]) {
     if (networkAdminServiceSwitch[netId][service]) {
@@ -474,7 +474,7 @@ const resetNetworkAdminService = (netId: string, service: string) => {
     networkAdminServiceSwitch[netId] = {};
   }
 };
-//获取网络成员, 同步给其他客户端
+//Get network members, sync to other clients
 const syncNetworkMember = (netId: string) => {
   let net = getNetworkById(netId);
   let Authorization = net.Authorization;
@@ -494,7 +494,7 @@ const syncNetworkMember = (netId: string) => {
         },
       })
       .then((res: any) => {
-        // sendlog.log('管理员获取网络内成员',res.data)
+        // sendlog.log('Admin gets network members',res.data)
         let memberList = res.data.map((mem: any) => {
           let { networkId, nodeId, lastSeen, config, name } = mem;
           let { ipAssignments, authorized, id } = config;
@@ -519,11 +519,11 @@ const syncNetworkMember = (netId: string) => {
           .filter(
             (item: any) => item !== null && item !== undefined && item !== ""
           );
-        sendlog.log("管理员获取网络内成员");
-        console.log("管理员获取网络内成员", memberList);
-        sendlog.log("成员ip", memberIps);
+        sendlog.log("Admin gets network members");
+        console.log("Admin gets network members", memberList);
+        sendlog.log("Member IPs", memberIps);
         let adminIds = assignAdminId(netId);
-        //更新自己
+        //Update self
         updateLoaclNetwork({
           id: netId,
           memberList,
@@ -535,18 +535,18 @@ const syncNetworkMember = (netId: string) => {
           url: "/syncNetworkData",
           memberIps,
           data: {
-            originId: zerotierStatus.address, //发起人
+            originId: zerotierStatus.address, //Initiator
             netId,
             memberList,
             adminIds,
           },
         });
-        //更新别人
+        //Update others
         window.nodeAPI.requestMember({
           url: "/syncNetworkData",
           memberIps,
           data: {
-            originId: zerotierStatus.address, //发起人
+            originId: zerotierStatus.address, //Initiator
             netId,
             memberList,
             adminIds,
@@ -556,10 +556,10 @@ const syncNetworkMember = (netId: string) => {
         return res;
       })
       .catch((e) => {
-        sendlog.log("获取网络成员报错", e.message);
+        sendlog.log("Error getting network members", e.message);
         cancel();
       });
-  //启用轮询
+  //Enable polling
   const { run, cancel } = useRequest(updateMember, {
     manual: true,
     pollingInterval: 1000 * 60 * 10,
@@ -568,7 +568,7 @@ const syncNetworkMember = (netId: string) => {
   networkAdminServiceSwitch[netId]["syncNetworkMember"] = { run, cancel };
   run();
 };
-//接收网络成员数据
+//Receive network member data
 const memberListUpdateCount = ref(0);
 const setSyncNetworkData = (data: any) => {
   let {
@@ -583,16 +583,16 @@ const setSyncNetworkData = (data: any) => {
   });
   memberListUpdateCount.value++;
 };
-//收到成员的请求
+//Received member request
 const getMemberData = (data: any) => {
   let { name, netId, id }: { name: string; netId: string; id: string } = data;
-  sendlog.log("收到成员数据请求", name);
+  sendlog.log("Received member data request", name);
 
   checkMemberName(netId, { id, name }).then(() => {
     syncNetworkMember(netId);
   });
 };
-//向管理员请求网络成员
+//Request network members from administrator
 const requestNetworkMember = (netId: string) => {
   let adminIds = assignAdminId(netId);
   // let promiseList: any[] = []
@@ -605,7 +605,7 @@ const requestNetworkMember = (netId: string) => {
       url: "/getMemberData",
       memberIps: [ip],
       data: {
-        originId: zerotierStatus.address, //发起人
+        originId: zerotierStatus.address, //Initiator
         netId,
         name: localJsonData.nickname || zerotierStatus.address,
         id: zerotierStatus.address,
@@ -613,25 +613,25 @@ const requestNetworkMember = (netId: string) => {
     });
   });
 };
-//检查成员昵称
+//Check member nickname
 const checkMemberName = (netId: string, member: netMember) =>
   new Promise((resolve, reject) => {
     let net = getNetworkById(netId);
     let memberLocal = getMemberById(net, String(member.id));
-    //昵称不匹配，更新昵称
+    //Nickname mismatch, update nickname
     if (memberLocal && memberLocal.name != member.name) {
       sendlog.log(
-        "昵称不匹配，更新昵称 ",
+        "Nickname mismatch, updating nickname ",
         `id:${member.id} name:${memberLocal.name} -> ${member.name}`
       );
       if (net.Authorization) {
-        sendlog.log("我是管理员，自己更新昵称");
+        sendlog.log("I am admin, updating my own nickname");
         updateMemberData(netId, member).finally(() => {
           resolve("");
-          syncNetworkMember(String(netId)); //管理员要自己同步
+          syncNetworkMember(String(netId)); //Admin must sync themselves
         });
       } else {
-        sendlog.log("向管理员请求更新昵称");
+        sendlog.log("Request admin to update nickname");
         requestNetworkMember(netId);
         resolve("");
       }
@@ -639,7 +639,7 @@ const checkMemberName = (netId: string, member: netMember) =>
       resolve("");
     }
   });
-//更新成员信息
+//Update member information
 const updateMemberData = (netId: string, member: netMember) =>
   new Promise((resolve, reject) => {
     let net = getNetworkById(netId);
@@ -659,7 +659,7 @@ const updateMemberData = (netId: string, member: netMember) =>
         resolve("");
       });
   });
-//授权成员
+//Authorize member
 const memberAuthorized = (
   netId: string,
   memberId: string,
@@ -685,7 +685,7 @@ const memberAuthorized = (
       })
       
   });
-//ping一个网络成员
+//Ping a network member
 const pingMember = (ip:string)=> new Promise((resolve)=>{
   window.nodeAPI.pingMember(ip).then(res=>{
     // console.log(res.data)
@@ -696,7 +696,7 @@ const pingMember = (ip:string)=> new Promise((resolve)=>{
     resolve(showAvg)
   })
 })
-//管理员功能
+//Administrator features
 const networkAdminService = () => {
   const service = (net: userNetwork) => {
     syncNetworkMember(String(net.id));
@@ -710,10 +710,10 @@ const networkAdminService = () => {
     resolve("");
   });
 };
-// ------------------ 文件传输 ------------------------ //
-const uploadFileList: Ref<uploadFileType[]> = ref([]); //我上传的文件列表
-const takeFileList: Ref<uploadFileType[]> = ref([]); //我接收的文件列表
-//文件大小
+// ------------------ File Transfer ------------------------ //
+const uploadFileList: Ref<uploadFileType[]> = ref([]); //My uploaded file list
+const takeFileList: Ref<uploadFileType[]> = ref([]); //My received file list
+//File size
 const showfileSize = (size: number) => {
   let symbolArr = ["Byte", "KB", "MB", "GB", "TB", "PB"];
   let symbolIndex = 0;
@@ -734,7 +734,7 @@ const takeUploadFileInfo = (data: any) => {
     data;
   let ori = nameMap.value[originId] || originId;
   let showSize = showfileSize(Number(size));
-  sendlog.log(`收到来自${ori}的文件请求`, fileName, showSize);
+  sendlog.log(`Received file request from ${ori}`, fileName, showSize);
   takeFileList.value.push({
     fileName: fileName,
     size,
@@ -755,7 +755,7 @@ const uploadFileInfo = ({
   takeId: string;
 }) => {
   let upLoadId = file.name + "-" + file.size + "-" + file.lastModified;
-  //发送要上传的文件信息
+  //Send file information to upload
   window.nodeAPI.requestMember({
     url: "/uploadFileInfo",
     memberIps,
@@ -775,20 +775,20 @@ const uploadFileInfo = ({
   });
 };
 
-//接收node接口数据
+//Receive node interface data
 const onNodeServeData = () =>
   new Promise((resolve, reject) => {
     let requestUrlMap: Record<string, any> = {
-      //接收网络成员数据
+      //Receive network member data
       syncNetworkData: setSyncNetworkData,
-      //请求网络成员数据
+      //Request network member data
       getMemberData: getMemberData,
-      //文件传输请求
+      //File transfer request
       takeUploadFileInfo: takeUploadFileInfo,
     };
-    //接收 网络成员列表消息
+    //Receive network member list message
     window.nodeAPI.onWebContentsSend((data: any) => {
-      // sendlog.log('vue接收到网络成员消息', data)
+      // sendlog.log('Vue received network member message', data)
       let { requestUrl, body }: { requestUrl: string; body: any } = data;
       let fn = requestUrlMap[String(requestUrl)];
       fn(body);
@@ -796,15 +796,15 @@ const onNodeServeData = () =>
     resolve("");
   });
 //
-// ================================ 初始化流程 ================================
+// ================================ Initialization Process ================================
 let initCount = 0;
 const init = () => {
-  sendlog.log("数据初始化, 次数" + ++initCount);
-  //读取本地文件
-  //监听node接口
-  //获取ZeroTier状态
-  //检查已加入的网络
-  //检查管理权限
+  sendlog.log("Data initialization, count " + ++initCount);
+  //Read local file
+  //Listen to node interface
+  //Get ZeroTier status
+  //Check joined networks
+  //Check admin permissions
   getLocalJsonData()
     .then(onNodeServeData)
     .then(getToken)
@@ -814,9 +814,9 @@ const init = () => {
 };
 
 export default {
-  //添加任务 函数
+  //Add task function
   addmission,
-  //任务列表 响应对象
+  //Task list response object
   missionQuery,
   missionNoEmpty,
   // creatMission,

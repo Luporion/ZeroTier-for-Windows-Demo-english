@@ -18,9 +18,9 @@ const { missionNoEmpty, missionQuery, init } = missionBus
 window.$message = messageApi
 window.$modal = ModalApi
 const tablist = {
-  0: '加入网络',
-  1: '创建网络',
-  2: '中转设置',
+  0: 'Join Network',
+  1: 'Create Network',
+  2: 'Transit Settings',
 }
 let tabComponentMap: Record<number, any> = {
   0: JoinPage,
@@ -36,7 +36,7 @@ const tabSelected: Ref<number> = ref(0)
 const appClickCount: Ref<number> = ref(0)
 provide('appClickCount', appClickCount)
 const appClick = () => {
-  // console.log('全局点击')
+  // console.log('Global click')
   appClickCount.value++
 }
 </script>
@@ -67,10 +67,10 @@ const appClick = () => {
         <KeepAlive>
           <component :is="tabComponent" />
         </KeepAlive>
-        <!-- <div @click="addmission()">添加</div> -->
-        <!-- <div @click="missionStart">执行</div> -->
+        <!-- <div @click="addmission()">Add</div> -->
+        <!-- <div @click="missionStart">Execute</div> -->
       </div>
-      <!-- 流程图 -->
+      <!-- Flow chart -->
       <Transition name="fade">
         <div class="mission-list-body" v-show="missionNoEmpty">
           <template v-for="(fl, index) in missionQuery" :key="fl.key">

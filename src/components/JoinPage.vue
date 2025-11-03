@@ -25,12 +25,12 @@ const icons = inject('icons') as Record<string, string>
 onMounted(() => {
 	init()
 })
-//更新本地昵称
+//Update local nickname
 const updateNickname = () => {
 	updateLocalJsonData()
 	syncNickname()
 }
-//网络同步昵称
+//Sync nickname across network
 const syncNickname = () => {
 	if (selectedNetworkId.value) {
 		let netId = selectedNetworkId.value
@@ -40,16 +40,16 @@ const syncNickname = () => {
 		})
 	}
 }
-//网络列表 展示用的
+//Network list for display
 const joinedNetworkList: Ref<userNetwork[]> = computed(() => {
-	//本地网络列表缓存
+	//Local network list cache
 	if (Array.isArray(localJsonData.joinedNetworkList)) {
 		return localJsonData.joinedNetworkList
 	} else {
 		return []
 	}
 })
-//添加网络
+//Add network
 const joinNetworkId = ref('')
 let settingBox: Ref<userNetwork> = ref({
 	allowManaged: true,
@@ -62,13 +62,13 @@ watch(settingBox, (v) => {
 }, {
 	deep: true
 })
-//触发更新
+//Trigger update
 const settingBoxUpdate = () => joinNetworkUpdate()
 const joinNetworkDialogShow = ref(false)
 const joinNetworkDialog = () => {
 	joinNetworkDialogShow.value = true
 }
-//从弹窗id加入网络
+//Join network from dialog ID
 const joinNetworkConfirm = () => {
 	joinNetworkDialogShow.value = false
 	joinNetwork(joinNetworkId.value, {
@@ -80,11 +80,11 @@ const joinNetworkConfirm = () => {
 		joinNetworkId.value = ''
 	})
 }
-//加入 & 更新网络
+//Join & update network
 const joinNetworkUpdate = (net?: userNetwork) => {
 	let settintObj = {}
 	let netId = ''
-	//从列表双击
+	//Double click from list
 	if (net) {
 		let { id, allowManaged, allowGlobal, allowDefault, allowDNS } = net
 		netId = id || ''
@@ -92,28 +92,28 @@ const joinNetworkUpdate = (net?: userNetwork) => {
 	} else {
 		netId = selectedNetworkId.value
 		let netIndex = joinedNetworkList.value.findIndex(e => e.id == netId)
-		//从现有列表连接
+		//Connect from existing list
 		if (netIndex >= 0) {
 			let { allowManaged, allowGlobal, allowDefault, allowDNS } = joinedNetworkList.value[netIndex]
 			Object.assign(settintObj, { allowManaged, allowGlobal, allowDefault, allowDNS })
 		} else {
-			//从详情中连接
+			//Connect from details
 			settintObj = JSON.parse(JSON.stringify(settingBox.value))
 		}
 	}
 
 	joinNetwork(netId, settintObj).then((res: any) => {
-		//选中,更新
+		//Select and update
 		selectNetwork(res.data)
 
 		let netIndex = joinedNetworkList.value.findIndex(e => e.id == netId)
 		// selectedNetworkCopy.value = joinedNetworkList.value[netIndex]
 	})
 }
-//离开网络
+//Leave network
 const leaveNetwork = () => {
-	window.$modal('离开网络').then(res => {
-		//离开
+	window.$modal('Leave Network').then(res => {
+		//Leave
 		let netId = selectedNetworkId.value
 		closeNetwork(netId).then(res => {
 			// console.log()
@@ -128,7 +128,7 @@ const leaveNetwork = () => {
 	})
 }
 
-//选中的网络
+//Selected network
 const selectedNetworkId = ref('')
 // let selectedNetworkCopy: Ref<userNetwork> = ref({});
 const selectedNetworkCopy = computed(() => {
@@ -148,22 +148,22 @@ const selectNetwork = (net: userNetwork) => {
 	// console.log(settingBox)
 }
 
-//网络详情
+//Network details
 const myip = computed(() => {
 	let arr = selectedNetworkCopy.value.assignedAddresses
 	if (Array.isArray(arr)) {
 		let str = arr.map(s => s.replace(/\/\d+/, '')).join(',')
-		return str || '未分配IP'
+		return str || 'No IP Assigned'
 	} else {
-		return '未分配IP'
+		return 'No IP Assigned'
 	}
 })
-//状态显示
+//Status display
 let statusMap: Record<string, string[]> = {
-	'OK': ['连接成功', '#00c500', 'pass'],
-	'REQUESTING_CONFIGURATION': ['等待授权', '#1296db', 'wait'],
-	"ACCESS_DENIED": ['等待授权', '#1296db', 'wait'],
-	'undefined': ['未连接', '#8A8A8A', 'closed']
+	'OK': ['Connected', '#00c500', 'pass'],
+	'REQUESTING_CONFIGURATION': ['Awaiting Authorization', '#1296db', 'wait'],
+	"ACCESS_DENIED": ['Awaiting Authorization', '#1296db', 'wait'],
+	'undefined': ['Not Connected', '#8A8A8A', 'closed']
 }
 const myStatus = computed(() => {
 	let status = selectedNetworkCopy.value.status
@@ -172,48 +172,48 @@ const myStatus = computed(() => {
 	return { name, color, icon }
 	// } else {
 	// 	return {
-	// 		name: '未连接',
+	// 		name: 'Not Connected',
 	// 		color: '#8A8A8A',
 	// 		icon:'closed'
 	// 	}
 	// }
 })
-//列表状态显示
+//List status display
 const listStatus = (status: string | undefined) => {
 	let [name, color, icon] = statusMap[String(status)]
 	return icon
 }
-//管理器功能
+//Administrator features
 const adminToken = ref('')
 const adminTokenNetId = ref()
 const adminTokenShow = ref(false)
 const adminTokenShowConfirm = () => {
-	//验证网络管理权限
+	//Verify network management permissions
 	let netId = adminTokenNetId.value as string
 	let token = adminToken.value
 	authAdminToken(netId, token)
 	adminTokenShow.value = false
 }
-//网络列表右键菜单
+//Network list right-click menu
 const listMouseContxt: (net: userNetwork) => any[] = (net: userNetwork) => {
 	return [{
-		label: '管理员Token',
+		label: 'Admin Token',
 		callback: () => {
-			//弹窗输入id
+			//Popup to enter ID
 			adminToken.value = net.Authorization?.replace('token ', '') || ''
 			adminTokenShow.value = true
 			adminTokenNetId.value = net.id
 		}
 	}]
 }
-//网络成员列表
+//Network member list
 const memberList = computed(() => {
-	console.log('成员列表刷新计数', memberListUpdateCount.value)
+	console.log('Member list refresh count', memberListUpdateCount.value)
 	memberListUpdateCount.value
 	if (selectedNetworkId.value) {
 		let memberList = selectedNetworkCopy.value.memberList || reactive([])
 		let adminIds = selectedNetworkCopy.value.adminIds || reactive([])
-		//自己放前面，图标特殊颜色，管理员特殊颜色 区分已授权未授权
+		//Put self at front, special color for icon, special color for admin, distinguish authorized/unauthorized
 		let list = memberList.map((member: netMember) => {
 			let icon = 'user'
 			let sortc = 4
@@ -257,53 +257,53 @@ const memberMouseContxt = (memberId: string | undefined) => {
 				copyText(member.ip)
 			}
 		}, member.authorized ? {
-			label: '取消授权',
+			label: 'Revoke Authorization',
 			callback: () => {
 				// copyText(member.ip)
 				let netId = selectedNetworkId.value
 				let memberId = String(member.id)
-				window.$message('取消授权中')
+				window.$message('Revoking authorization')
 				memberAuthorized(netId, memberId, false).then((res: any) => {
 					console.log(res)
 					if (res.status == 'success') {
-						window.$message('取消成功')
+						window.$message('Revoked successfully')
 						memberRefresh(netId)
 					}
 				})
 			}
 		} : {
-			label: '授权',
+			label: 'Authorize',
 			callback: () => {
 				let netId = selectedNetworkId.value
 				let memberId = String(member.id)
-				window.$message('授权中')
+				window.$message('Authorizing')
 				memberAuthorized(netId, memberId, true).then((res: any) => {
 					if (res.status == 'success') {
-						window.$message('授权成功')
+						window.$message('Authorized successfully')
 						memberRefresh(netId)
 					}
 				})
 			}
 		}
 			// {
-			// 	label: '给ta传文件',
+			// 	label: 'Send file to them',
 			// 	callback: () => {
 			// 		sendFileShow.value = true
-			// 		sendFileShowTitle.value = `发送给 ${member.name || member.id}`
+			// 		sendFileShowTitle.value = `Send to ${member.name || member.id}`
 			// 		sendMember.value = member
 			// 		console.log('member', sendMember.value.ip)
-			// 		// window.$message('下次一定')
+			// 		// window.$message('Next time for sure')
 			// 	}
 			// }
 		]
 	}
 }
-//刷新网络成员
+//Refresh network members
 const memberRefresh = (netId: string | undefined) => {
-	window.$message('刷新')
+	window.$message('Refreshing')
 	syncNetworkMember(String(netId))
 }
-//ping网络成员
+//Ping network members
 let pingMap: Record<string, string> = reactive({})
 const pingMemberByNet = () => {
 	window.$message('Ping')
@@ -316,7 +316,7 @@ const pingMemberByNet = () => {
 		})
 	})
 }
-//发送文件
+//Send file
 const sendFileShow = ref(false)
 const sendFileShowTitle = ref('')
 const sendFileShowPath = ref('')
@@ -324,15 +324,15 @@ const sendMember: Ref<netMember> = ref({})
 let sendFile: File | null = null
 const selectFileChange = (e: any) => {
 	// console.log('选择文件', e)
-	// sendlog.log('选择文件', e.target.value)
+	// sendlog.log('Select file', e.target.value)
 	let file = e.target.files[0];
 	sendFile = file
 	sendFileShowPath.value = file.path
-	console.log('选择文件', file)
+	console.log('Select file', file)
 }
 const sendFileShowConfirm = () => {
 	if (sendFile && sendMember.value.id) {
-		console.log('发送ip', sendMember.value.ip)
+		console.log('Send IP', sendMember.value.ip)
 		uploadFileInfo({
 			file: sendFile,
 			memberIps: [String(sendMember.value.ip)],
@@ -342,11 +342,11 @@ const sendFileShowConfirm = () => {
 	}
 	sendFileShow.value = false
 }
-//点击复制
+//Click to copy
 const copyText = (text: string | number | undefined) => {
 	if (text) {
 		navigator.clipboard.writeText(text.toString());
-		window.$message('已复制  ' + text)
+		window.$message('Copied  ' + text)
 	}
 }
 </script>
@@ -357,7 +357,7 @@ const copyText = (text: string | number | undefined) => {
 		<div class="left">
 			<div class="info">
 				<div class="info-item" style="color: #FDB25D;">
-					本机信息
+					Local Info
 				</div>
 				<div class="info-item">
 					<div>ID</div>
@@ -367,13 +367,13 @@ const copyText = (text: string | number | undefined) => {
 					</div>
 				</div>
 				<div class="info-item">
-					<div>昵称</div>
+					<div>Nickname</div>
 					<input v-model="localJsonData.nickname" @blur="updateNickname" placeholder="name" class="nickname-input" />
 				</div>
 			</div>
 			<div class="list-title">
-				<div>网络列表</div>
-				<div class="icons"><img @click="joinNetworkDialog" title="添加" :src="icons.add" /></div>
+				<div>Network List</div>
+				<div class="icons"><img @click="joinNetworkDialog" title="Add" :src="icons.add" /></div>
 			</div>
 			<div class="list">
 				<div v-for="net in joinedNetworkList" class="list-item" @click="selectNetwork(net)"
@@ -382,7 +382,7 @@ const copyText = (text: string | number | undefined) => {
 					<span class="text">{{ net.name || net.id }}</span>
 					<img v-show="listStatus(net.status) == 'pass'" class="pass" :src="icons.pass" />
 					<img v-show="listStatus(net.status) == 'wait'" class="pass" :src="icons.wait" />
-					<img class="delete" @click.stop title="删除" :src="icons.delete" />
+					<img class="delete" @click.stop title="Delete" :src="icons.delete" />
 				</div>
 			</div>
 		</div>
@@ -391,7 +391,7 @@ const copyText = (text: string | number | undefined) => {
 				<div class="top">
 					<div class="info">
 						<span class="name" :title="selectedNetworkCopy.name || ''">{{ selectedNetworkCopy.name ||
-						'未知网络名' }}</span>
+						'Unknown Network' }}</span>
 						<span>ID <span class="underline" @click="copyText(selectedNetworkCopy.id)">{{
 						selectedNetworkCopy.id
 					}}</span></span>
@@ -403,24 +403,24 @@ const copyText = (text: string | number | undefined) => {
 							<div class="setting-item">
 								<checkbox v-model:value="settingBox.allowManaged" @update:value="settingBoxUpdate"
 									keyname="allowManaged" />
-								<span class="text">启用连接</span>
+								<span class="text">Enable Connection</span>
 							</div>
 							<div class="setting-item">
 								<checkbox v-model:value="settingBox.allowGlobal" @update:value="settingBoxUpdate"
 									keyname="allowGlobal" />
-								<span class="text">全局连接</span>
+								<span class="text">Global Connection</span>
 							</div>
 						</div>
 						<div v-show="myStatus.icon != 'colsed'" class="close">
-							<span @click="joinNetworkUpdate()" class="link">连接</span>
-							<span @click="leaveNetwork" class="leave">断开连接</span>
+							<span @click="joinNetworkUpdate()" class="link">Connect</span>
+							<span @click="leaveNetwork" class="leave">Disconnect</span>
 						</div>
 					</div>
 				</div>
 				<div class="right-body">
 					<div class="member">
 						<div class="member-title">
-							<span>网络成员</span>
+							<span>Network Members</span>
 							<img class="refresh" :src="icons.refresh" @click="memberRefresh(selectedNetworkCopy.id)" />
 							<span class="ping" @click="pingMemberByNet">Ping</span>
 						</div>
@@ -439,21 +439,21 @@ const copyText = (text: string | number | undefined) => {
 			<div v-else class="empty-body">
 				<img class="icon" :src="icons.ZeroTier" />
 				<div class="empty-button" @click="joinNetworkDialog">
-					添加网络
+					Add Network
 				</div>
 			</div>
 		</div>
-		<!-- 加入网络设置 -->
-		<!-- allowManaged 允许托管。默认是。允许 ZeroTier 设置 IP 地址和路由（仅限本地/专用范围）
-			allowGlobal 允许全局。默认否。允许 ZeroTier 设置全局/公共/非私有范围 IP 和路由。
-			allowDefault 允许默认。默认否。允许 ZeroTier 设置系统上的默认路由。请参阅完整隧道模式。
-			allowDNS 允许 DNS。默认否。允许 ZeroTier 设置 DNS 服务器。-->
-		<Dialog v-model:show="joinNetworkDialogShow" title="网络ID" @confirm="joinNetworkConfirm">
+		<!-- Join network settings -->
+		<!-- allowManaged: Allow managed. Default yes. Allow ZeroTier to set IP addresses and routes (local/private range only)
+			allowGlobal: Allow global. Default no. Allow ZeroTier to set global/public/non-private range IPs and routes.
+			allowDefault: Allow default. Default no. Allow ZeroTier to set default route on the system. See full tunnel mode.
+			allowDNS: Allow DNS. Default no. Allow ZeroTier to set DNS servers.-->
+		<Dialog v-model:show="joinNetworkDialogShow" title="Network ID" @confirm="joinNetworkConfirm">
 			<div class="net-id-input">
 				<input v-model="joinNetworkId" class="input">
 			</div>
 		</Dialog>
-		<Dialog v-model:show="adminTokenShow" title="管理员Token" @confirm="adminTokenShowConfirm">
+		<Dialog v-model:show="adminTokenShow" title="Admin Token" @confirm="adminTokenShowConfirm">
 			<div class="net-id-input">
 				<input v-model="adminToken" class="input">
 			</div>
@@ -462,7 +462,7 @@ const copyText = (text: string | number | undefined) => {
 			<div class="net-id-input">
 				<input id="selectfile" @change="selectFileChange" type="file" v-show="false">
 				<label class="selectfile-label" for="selectfile">
-					{{ sendFileShowPath || '点击选择文件' }}
+					{{ sendFileShowPath || 'Click to select file' }}
 				</label>
 			</div>
 		</Dialog>
