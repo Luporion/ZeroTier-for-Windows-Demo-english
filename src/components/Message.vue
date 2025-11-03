@@ -4,7 +4,7 @@
 <template>
   <Transition>
     <div v-show="show" class="box">
-      {{ msg || '消息框' }}
+      {{ msg || 'Message' }}
     </div>
   </Transition>
 </template>

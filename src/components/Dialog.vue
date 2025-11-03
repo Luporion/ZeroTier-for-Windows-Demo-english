@@ -15,12 +15,12 @@ defineEmits(['update:show', 'confirm'])
         <div v-show="show" class="dialog">
           <div class="title">
             <div>{{ title }}</div>
-            <img @click="$emit('update:show', false)" class="close" title="关闭" src="@/assets/delete.svg" />
+            <img @click="$emit('update:show', false)" class="close" title="Close" src="@/assets/delete.svg" />
           </div>
           <slot></slot>
           <div class="btns">
-            <div @click="$emit('update:show',false)" class="btn">取消</div>
-            <div @click="$emit('confirm',$event)" class="btn confirm">确认</div>
+            <div @click="$emit('update:show',false)" class="btn">Cancel</div>
+            <div @click="$emit('confirm',$event)" class="btn confirm">Confirm</div>
           </div>
         </div>
       </Transition>

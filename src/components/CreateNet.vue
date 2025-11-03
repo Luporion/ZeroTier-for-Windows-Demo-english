@@ -7,28 +7,29 @@ const openBrowser = () => {
 <template>
   <div class="create-net">
     <div class="tab-item" @click="openBrowser">
-      <div>在官方平台创建</div>
+      <div>Create on Official Platform</div>
       <div class="info">
         <!-- <img :src="icons.chrome"  /> -->
         <div>
-          <span class="green">管理员Token</span>
-          获取:
+          <span class="green">Admin Token</span>
+          How to get:
         </div>
-        <div>1.注册登录</div>
+        <div>1. Register and login</div>
         <div>
-          2.点击右上角
+          2. Click on
           <span class="green">Account</span>
+          in the upper right corner
         </div>
         <div>
-          3.点击
+          3. Click
           <span class="green">New Token</span>
         </div>
-        <span class="red" style="margin: 3rem 0 0;">本机代理创建功能开发中</span>
+        <span class="red" style="margin: 3rem 0 0;">Local proxy creation feature in development</span>
       </div>
     </div>
     <div class="tab-item disable">
-      <div>在本机创建</div>
-      <div class="info red">开发中</div>
+      <div>Create Locally</div>
+      <div class="info red">In Development</div>
     </div>
   </div>
 </template>

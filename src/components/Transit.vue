@@ -13,16 +13,16 @@ const serveId = ref('')
 const addTransit = () => {
   window.nodeAPI.addTransit(serveId.value).then((res: any) => {
     if (res.status == 'success') {
-      window.$message('添加服务器成功')
+      window.$message('Server added successfully')
       getPeerList()
     } else {
-      window.$message('添加服务器失败')
+      window.$message('Failed to add server')
     }
   })
 }
 let initCount = 0
 onActivated(() => {
-  sendlog.log('中转页面显示初始化', ++initCount)
+  sendlog.log('Transit page initialization', ++initCount)
   getPeerList()
 })
 const tabNum = ref(0)
@@ -48,7 +48,7 @@ const showList = computed(() => {
 })
 const refresh = () => {
   getPeerList()
-  window.$message('刷新')
+  window.$message('Refreshing')
 }
 </script>
 
@@ -62,26 +62,26 @@ const refresh = () => {
         <input class="input" v-model="serveId" />
       </div>
       <div class="add" @click="addTransit">
-        添加中转
+        Add Transit
       </div>
     </div>
     <div class="transit-body">
-      <!-- <div class="transit-body-title">节点列表</div> -->
+      <!-- <div class="transit-body-title">Node List</div> -->
       <div class="tablist">
         <div class="tablist-item" :class="{ 'active': isLeaf }" @click="tabNum = 0">
-          <span>网络成员</span>
+          <span>Network Members</span>
           <Transition name="fade">
             <div v-show="isLeaf" class="arrow"></div>
           </Transition>
         </div>
         <div class="tablist-item" :class="{ 'active': isMoon }" @click="tabNum = 1">
-          <span>中转服务器</span>
+          <span>Transit Servers</span>
           <Transition name="fade">
             <div v-show="isMoon" class="arrow"></div>
           </Transition>
         </div>
         <div class="tablist-item" :class="{ 'active': isPlanet }" @click="tabNum = 2">
-          <span>官方根服务器</span>
+          <span>Official Root Servers</span>
           <Transition name="fade">
             <div v-show="isPlanet" class="arrow"></div>
           </Transition>
@@ -91,9 +91,9 @@ const refresh = () => {
       <div class="grid-body">
         <div class="grid">
           <div>ID</div>
-          <div>昵称</div>
-          <div>延迟</div>
-          <div>IP路径</div>
+          <div>Nickname</div>
+          <div>Latency</div>
+          <div>IP Path</div>
         </div>
         <div class="scroll">
           <div class="grid" v-for="peer in showList">
