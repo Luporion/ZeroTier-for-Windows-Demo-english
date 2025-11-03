@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Release Files
+        run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Version from Tag
+        id: get_version
+        run: |
+          $VERSION = "${{ github.ref_name }}".TrimStart("v")
+          echo "VERSION=$VERSION" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/${{ steps.get_version.outputs.VERSION }}/*.exe
+            release/${{ steps.get_version.outputs.VERSION }}/*.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          name: ZeroTier for Windows ${{ github.ref_name }}
+          body: |
+            ## Download
+            
+            Download the installer for Windows from the assets below.
+            
+            ### Installation
+            
+            1. Download `ZeroTier for Windows-Windows-${{ steps.get_version.outputs.VERSION }}-Setup.exe`
+            2. Run the installer with Administrator privileges
+            3. Follow the installation wizard
+            
+            ### What's Changed
+            
+            See the changelog below for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

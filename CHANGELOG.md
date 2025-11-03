@@ -1,3 +1,22 @@
+## Unreleased
+
+### Added
+- Comprehensive build documentation (BUILD.md)
+- Release guide for maintainers (RELEASE.md)
+- GitHub Actions workflow for automated builds on every push
+- GitHub Actions workflow for automated releases when version tags are pushed
+- Downloads section in README with links to releases
+- Build status badges in README
+
+### Changed
+- Enabled and updated GitHub Actions build workflow
+- Updated README with clearer instructions for end users vs developers
+- Fixed repository URLs in README to point to correct repository
+
+### Infrastructure
+- Automated release creation with GitHub Actions
+- Ready-to-download installers available from GitHub Releases
+
 ## 2022-10-03
 
 [v2.1.0](https://github.com/electron-vite/electron-vite-vue/pull/267)
