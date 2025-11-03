@@ -1,6 +1,6 @@
 # ZeroTier-for-Windows
 
-Demo version currently only in Simplified Chinese
+Demo version - Now fully translated to English
 
 ## Thanks to
 [![ZeroTier](https://avatars.githubusercontent.com/u/4173285?s=60&v=4)](https://github.com/zerotier/ZeroTierOne)
@@ -32,7 +32,7 @@ Demo version currently only in Simplified Chinese
   - Add transit servers
   - View network members and transit service connection information
 - Language Support
-  - Simplified Chinese
+  - English (UI fully translated)
 - Platform Support
   - Windows
 ## Planned Features
