@@ -76,7 +76,7 @@ export default {
       }
       show.value = false
     }
-    //设置触发函数
+    //Set trigger function
     onMounted(() => {
       defaultOpen = (option: MouseOption) => {
         posX.value = option.x || 0

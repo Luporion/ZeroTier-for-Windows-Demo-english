@@ -281,73 +281,73 @@ const getPeerList = () => {
 
 <template>
   <div>
-    <div class="button" @click="getToken">获取token</div>
-    <div class="button" @click="getStatus">连接到zerotier状态</div>
-    <div> ---Controller 控制--- </div>
+    <div class="button" @click="getToken">Get Token</div>
+    <div class="button" @click="getStatus">Connect to ZeroTier Status</div>
+    <div> ---Controller Management--- </div>
     <div class="button">
-      <span @click="postNetwork">生成随机网络ID</span> <span>{{ newNetwork.id }}</span>
+      <span @click="postNetwork">Generate Random Network ID</span> <span>{{ newNetwork.id }}</span>
     </div>
     <div class="button">
-      <span @click="getNetworkList">获取网络列表</span>
+      <span @click="getNetworkList">Get Network List</span>
       <div v-for="n in networkList" @click="chooseNetwork(n)">{{ n }}</div>
     </div>
     <div class="button" >
-      <span @click="getNetworkStatus">获取网络详情 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="getNetworkStatus">Get Network Details Network ID:</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="postNetworkId">更新网络</span> <input v-model="chooseNetworkId" />
+      <span @click="postNetworkId">Update Network</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="deleteNetwork">删除网络</span> <input v-model="chooseNetworkId" />
+      <span @click="deleteNetwork">Delete Network</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="getNetworkMember">获取网络成员 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="getNetworkMember">Get Network Members Network ID:</span> <input v-model="chooseNetworkId" />
       <div v-for="(m, key) in networkMemberList" @click="chooseMember(key)">{{ key }}</div>
     </div>
     <div class="button">
-      <span @click="getNetworkMemberDetail">网络成员详情 成员ID:</span> <input v-model="chooseMemberId" />
+      <span @click="getNetworkMemberDetail">Network Member Details Member ID:</span> <input v-model="chooseMemberId" />
     </div>
     <div class="button">
-      <span @click="authorizedNetworkMember">授权网络成员 成员ID:</span> <input v-model="chooseMemberId" />
+      <span @click="authorizedNetworkMember">Authorize Network Member Member ID:</span> <input v-model="chooseMemberId" />
     </div>
     <div class="button">
-      <span @click="updateNetworkMember">更新网络成员设置 成员ID:</span> <input v-model="chooseMemberId" />
+      <span @click="updateNetworkMember">Update Network Member Settings Member ID:</span> <input v-model="chooseMemberId" />
     </div>
     <div class="button">
-      <span>授权的IP IP:</span> <input v-model="ipAssignments" />
+      <span>Authorized IP:</span> <input v-model="ipAssignments" />
     </div>
     <div class="button">
-      <span @click="deleteNetworkMember">删除网络成员 成员ID:</span> <input v-model="chooseMemberId" />
+      <span @click="deleteNetworkMember">Delete Network Member Member ID:</span> <input v-model="chooseMemberId" />
     </div>
-    <div> ---Joined Networks 加入网络--- </div>
+    <div> ---Joined Networks--- </div>
     <div class="button">
-      <span @click="getjoinedNetworkList">获取加入的网络列表</span>
+      <span @click="getjoinedNetworkList">Get Joined Network List</span>
       <div v-for="n in joinedNetworkList" @click="chooseNetwork(n.id)">{{ n.id }}</div>
     </div>
     <div class="button">
-      <span @click="joinNetwork">加入网络 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="joinNetwork">Join Network Network ID:</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="updateNetwork">更新网络设置 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="updateNetwork">Update Network Settings Network ID:</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="joinNetworkDetail">加入网络的详情 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="joinNetworkDetail">Joined Network Details Network ID:</span> <input v-model="chooseNetworkId" />
     </div>
     <div class="button">
-      <span @click="leaveNetwork">离开网络 网络ID:</span> <input v-model="chooseNetworkId" />
+      <span @click="leaveNetwork">Leave Network Network ID:</span> <input v-model="chooseNetworkId" />
     </div>
 
     <div class="button">
-      <span @click="getlocalJsonData">列出所有网络</span>
+      <span @click="getlocalJsonData">List All Networks</span>
       <div v-for="n in localJsonData" @click="chooseNetwork(n.id)">{{ n.id }}</div>
     </div>
 
     <div class="button">
-      <span @click="getPeerList">列出所有对等点</span>
+      <span @click="getPeerList">List All Peers</span>
       <div v-for="n in peerList" @click="chooseNetwork(n.id)">{{ n.id }}</div>
     </div>
     <div class="button">
-      <span @click="joinNetwork">加入对等点 ID:</span> <input v-model="peerId" />
+      <span @click="joinNetwork">Join Peer ID:</span> <input v-model="peerId" />
     </div>
   </div>
 </template>

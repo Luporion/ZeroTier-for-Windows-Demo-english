@@ -249,7 +249,7 @@ const memberMouseContxt = (memberId: string | undefined) => {
 				copyText(member.id)
 			}
 		},/* {
-				label: '昵称: '+ member.name,
+				label: 'Nickname: ' + member.name,
 				callback: () => {}
 		}, */{
 			label: 'IP: ' + member.ip,
@@ -353,7 +353,7 @@ const copyText = (text: string | number | undefined) => {
 
 <template>
 	<div class="join-page">
-		<!-- 网络列表 -->
+		<!-- Network list -->
 		<div class="left">
 			<div class="info">
 				<div class="info-item" style="color: #FDB25D;">
