@@ -48,4 +48,10 @@
     ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
+  "extraResources": [
+    "ZeroTier One.msi"
+  ],
+  "win": {
+    "target": "nsis"
+  }
 }
