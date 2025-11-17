@@ -401,6 +401,12 @@ const copyText = (text: string | number | undefined) => {
 						<span>IP <span class="underline" @click="copyText(myip)">{{ myip }}</span></span>
 						<span :style="{ color: myStatus.color }" style="text-align: right;">{{ myStatus.name }}</span>
 					</div>
+					<div v-if="selectedNetworkCopy.controllerUrl" class="controller-info">
+						<span style="color: #8A8A8A;">Controller: </span>
+						<span class="underline" @click="copyText(selectedNetworkCopy.controllerUrl)" :title="selectedNetworkCopy.controllerUrl">
+							{{ selectedNetworkCopy.controllerUrl }}
+						</span>
+					</div>
 					<div class="setting">
 						<div class="button">
 							<div class="setting-item">
@@ -658,6 +664,21 @@ const copyText = (text: string | number | undefined) => {
 				overflow: hidden;
 				text-overflow: ellipsis;
 				max-width: 8rem;
+			}
+		}
+
+		.controller-info {
+			margin-top: 0.5rem;
+			font-size: 0.85rem;
+			display: flex;
+			align-items: center;
+			color: #dddddd;
+
+			span:last-child {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 30rem;
 			}
 		}
 

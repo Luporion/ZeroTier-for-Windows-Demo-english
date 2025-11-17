@@ -43,6 +43,8 @@ If you want to build from source, see the [BUILD.md](BUILD.md) guide for detaile
   - Default connection and global connection
 - Network Management - Networks created on the official platform
   - Set management Token
+  - Self-hosted controller support (ZeroUI/ztncui) via custom URLs
+  - Configure per-network controller URLs for private admin networks
   - Member authorization
   - Sync member information within the network
 - Transit Settings
