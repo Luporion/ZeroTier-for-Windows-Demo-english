@@ -55,6 +55,7 @@ interface userNetwork {
   Authorization?: string;
   memberList?: netMember[];
   adminIds?: any[]; //管理员id列表
+  controllerUrl?: string; //自定义控制器URL
 }
 interface netMember {
   id?: string;

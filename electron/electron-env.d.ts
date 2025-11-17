@@ -11,5 +11,6 @@ declare namespace NodeJS {
   }
 }
 export interface nodejsRequest extends AxiosRequestConfig {
-  type?: 'official' | 'local';
+  type?: 'official' | 'local' | 'custom';
+  customUrl?: string;
 }

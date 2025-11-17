@@ -371,6 +371,19 @@ const getPeerList = () => {
 // ==============================================================================
 // ==                                 Node Service Requests                     ==
 // ==============================================================================
+//Get API type and customUrl for network
+const getNetworkApiConfig = (netId: string) => {
+  let net = getNetworkById(netId);
+  if (net?.controllerUrl) {
+    return {
+      type: 'custom' as const,
+      customUrl: net.controllerUrl
+    };
+  }
+  return {
+    type: 'official' as const
+  };
+};
 //Merge adminId
 const assignAdminId = (
   netId: string,
@@ -394,9 +407,10 @@ const assignAdminId = (
 //Set admin ID to network tag
 const updateNetTag = (netId: string, tag: any[]) => {
   let net = getNetworkById(netId);
+  const apiConfig = getNetworkApiConfig(netId);
   window.nodeAPI
     .requestApi({
-      type: "official",
+      ...apiConfig,
       url: `network/${netId}`,
       method: "POST",
       data: {
@@ -411,14 +425,15 @@ const updateNetTag = (netId: string, tag: any[]) => {
     });
 };
 //Verify network management token
-const authAdminToken = (netId: string, token: string) => {
+const authAdminToken = (netId: string, token: string, controllerUrl?: string) => {
   return new Promise((resolve, reject) => {
+    const apiConfig = controllerUrl ? { type: 'custom' as const, customUrl: controllerUrl } : { type: 'official' as const };
     addmission({
       name: "Verify",
       icon: "auth",
       fn: () =>
         window.nodeAPI.requestApi({
-          type: "official",
+          ...apiConfig,
           url: "network",
           method: "get",
           headers: {
@@ -436,11 +451,15 @@ const authAdminToken = (netId: string, token: string) => {
                 String(zerotierStatus.address)
               );
               //Update permission token to local file
-              updateLoaclNetwork({
+              const networkUpdate: any = {
                 id: netId,
                 Authorization: "token " + token,
                 adminIds,
-              });
+              };
+              if (controllerUrl) {
+                networkUpdate.controllerUrl = controllerUrl;
+              }
+              updateLoaclNetwork(networkUpdate);
               //Update network extra parameters
               updateNetTag(netId, ["adminIds", adminIds]);
               resolve(res);
@@ -483,10 +502,11 @@ const syncNetworkMember = (netId: string) => {
     return;
   }
 
+  const apiConfig = getNetworkApiConfig(netId);
   const updateMember = () =>
     window.nodeAPI
       .requestApi({
-        type: "official",
+        ...apiConfig,
         url: `network/${netId}/member`,
         method: "get",
         headers: {
@@ -643,9 +663,10 @@ const checkMemberName = (netId: string, member: netMember) =>
 const updateMemberData = (netId: string, member: netMember) =>
   new Promise((resolve, reject) => {
     let net = getNetworkById(netId);
+    const apiConfig = getNetworkApiConfig(netId);
     window.nodeAPI
       .requestApi({
-        type: "official",
+        ...apiConfig,
         url: `network/${netId}/member/${member.id}`,
         method: "POST",
         data: {
@@ -667,9 +688,10 @@ const memberAuthorized = (
 ) =>
   new Promise((resolve, reject) => {
     let net = getNetworkById(netId);
+    const apiConfig = getNetworkApiConfig(netId);
     window.nodeAPI
       .requestApi({
-        type: "official",
+        ...apiConfig,
         url: `network/${netId}/member/${memberId}`,
         method: "POST",
         data: {
