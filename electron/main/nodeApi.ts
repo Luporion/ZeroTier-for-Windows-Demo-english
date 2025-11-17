@@ -53,13 +53,16 @@ ipcMain.handle("readZerotierToken", async () => {
 ipcMain.handle("requestApi", async (event, option: nodejsRequest) => {
   // sendlog.log(option)
   // return errcodeevent
-  let { url, method = "get", params, data, headers, type = "local" } = option;
+  let { url, method = "get", params, data, headers, type = "local", customUrl } = option;
   let baseurl = localHref;
   let baseHeaders: {} = {
     "X-ZT1-Auth": zeroToken,
   };
   if (type == "official") {
     baseurl = officialHref;
+    baseHeaders = {};
+  } else if (type == "custom" && customUrl) {
+    baseurl = customUrl;
     baseHeaders = {};
   }
   return new Promise((resolve, reject) => {

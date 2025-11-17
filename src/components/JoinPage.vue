@@ -185,13 +185,15 @@ const listStatus = (status: string | undefined) => {
 }
 //Administrator features
 const adminToken = ref('')
+const adminControllerUrl = ref('')
 const adminTokenNetId = ref()
 const adminTokenShow = ref(false)
 const adminTokenShowConfirm = () => {
 	//Verify network management permissions
 	let netId = adminTokenNetId.value as string
 	let token = adminToken.value
-	authAdminToken(netId, token)
+	let controllerUrl = adminControllerUrl.value.trim()
+	authAdminToken(netId, token, controllerUrl || undefined)
 	adminTokenShow.value = false
 }
 //Network list right-click menu
@@ -201,6 +203,7 @@ const listMouseContxt: (net: userNetwork) => any[] = (net: userNetwork) => {
 		callback: () => {
 			//Popup to enter ID
 			adminToken.value = net.Authorization?.replace('token ', '') || ''
+			adminControllerUrl.value = net.controllerUrl || ''
 			adminTokenShow.value = true
 			adminTokenNetId.value = net.id
 		}
@@ -398,6 +401,12 @@ const copyText = (text: string | number | undefined) => {
 						<span>IP <span class="underline" @click="copyText(myip)">{{ myip }}</span></span>
 						<span :style="{ color: myStatus.color }" style="text-align: right;">{{ myStatus.name }}</span>
 					</div>
+					<div v-if="selectedNetworkCopy.controllerUrl" class="controller-info">
+						<span style="color: #8A8A8A;">Controller: </span>
+						<span class="underline" @click="copyText(selectedNetworkCopy.controllerUrl)" :title="selectedNetworkCopy.controllerUrl">
+							{{ selectedNetworkCopy.controllerUrl }}
+						</span>
+					</div>
 					<div class="setting">
 						<div class="button">
 							<div class="setting-item">
@@ -453,9 +462,14 @@ const copyText = (text: string | number | undefined) => {
 				<input v-model="joinNetworkId" class="input">
 			</div>
 		</Dialog>
-		<Dialog v-model:show="adminTokenShow" title="Admin Token" @confirm="adminTokenShowConfirm">
+		<Dialog v-model:show="adminTokenShow" title="Admin Token & Controller" @confirm="adminTokenShowConfirm">
 			<div class="net-id-input">
-				<input v-model="adminToken" class="input">
+				<div class="text">Admin Token</div>
+				<input v-model="adminToken" class="input" placeholder="Enter admin token">
+			</div>
+			<div class="net-id-input" style="margin-top: 1rem;">
+				<div class="text">Controller URL (optional)</div>
+				<input v-model="adminControllerUrl" class="input" placeholder="e.g., http://192.168.1.100:3000/api/v1/">
 			</div>
 		</Dialog>
 		<Dialog v-model:show="sendFileShow" :title="sendFileShowTitle" @confirm="sendFileShowConfirm">
@@ -650,6 +664,21 @@ const copyText = (text: string | number | undefined) => {
 				overflow: hidden;
 				text-overflow: ellipsis;
 				max-width: 8rem;
+			}
+		}
+
+		.controller-info {
+			margin-top: 0.5rem;
+			font-size: 0.85rem;
+			display: flex;
+			align-items: center;
+			color: #dddddd;
+
+			span:last-child {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 30rem;
 			}
 		}
 
